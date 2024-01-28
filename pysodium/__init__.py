@@ -1794,3 +1794,54 @@ def crypto_core_ristretto255_scalar_mul(x,y):
     r = ctypes.create_string_buffer(crypto_core_ristretto255_SCALARBYTES)
     sodium.crypto_core_ristretto255_scalar_mul(r,x,y)
     return r.raw
+
+#
+# Adding VRF
+#
+
+crypto_vrf_ietfdraft03_BYTES = sodium.crypto_vrf_ietfdraft03_bytes()
+crypto_vrf_ietfdraft03_PROOFBYTES = sodium.crypto_vrf_ietfdraft03_proofbytes()
+crypto_vrf_ietfdraft03_OUTPUTBYTES = sodium.crypto_vrf_ietfdraft03_outputbytes()
+crypto_vrf_ietfdraft03_SEEDBYTES = sodium.crypto_vrf_ietfdraft03_seedbytes()
+crypto_vrf_ietfdraft03_PUBLICKEYBYTES = sodium.crypto_vrf_ietfdraft03_publickeybytes()
+crypto_vrf_ietfdraft03_SECRETKEYBYTES = sodium.crypto_vrf_ietfdraft03_secretkeybytes()
+
+def crypto_vrf_ietfdraft03_prove(skey, message):
+    if len(skey) != crypto_vrf_ietfdraft03_SECRETKEYBYTES: raise ValueError("Invalid param, must be {} bytes".format(crypto_vrf_ietfdraft03_SECRETKEYBYTES))
+    mlen = ctypes.c_longlong(len(message))
+    proof = ctypes.create_string_buffer(crypto_vrf_ietfdraft03_PROOFBYTES)
+    sodium.crypto_vrf_ietfdraft03_prove(proof, skey, message, mlen)
+    return proof.raw
+
+def crypto_vrf_ietfdraft03_verify(vkey, proof, message):
+    if len(vkey) != crypto_vrf_ietfdraft03_PUBLICKEYBYTES: raise ValueError("Invalid param, must be {} bytes".format(crypto_vrf_ietfdraft03_PUBLICKEYBYTES))
+    if len(proof) != crypto_vrf_ietfdraft03_PROOFBYTES: raise ValueError("Invalid param, must be {} bytes".format(crypto_vrf_ietfdraft03_PROOFBYTES))
+    mlen = ctypes.c_longlong(len(message))
+    output = ctypes.create_string_buffer(crypto_vrf_ietfdraft03_OUTPUTBYTES)
+    res = sodium.crypto_vrf_ietfdraft03_verify(output, vkey, proof, message, mlen)
+    return res == 0
+
+def crypto_vrf_ietfdraft03_proof_to_hash(proof):
+    if len(proof) != crypto_vrf_ietfdraft03_PROOFBYTES: raise ValueError("Invalid param, must be {} bytes".format(crypto_vrf_ietfdraft03_PROOFBYTES))
+    hash = ctypes.create_string_buffer(crypto_vrf_ietfdraft03_OUTPUTBYTES)
+    __check(sodium.crypto_vrf_ietfdraft03_proof_to_hash(hash, proof))
+    return hash.raw
+
+def crypto_vrf_ietfdraft03_keypair_from_seed(seed):
+    if len(seed) != crypto_vrf_ietfdraft03_SEEDBYTES: raise ValueError("Invalid param, must be {} bytes".format(crypto_vrf_ietfdraft03_SEEDBYTES))
+    pkey = ctypes.create_string_buffer(crypto_vrf_ietfdraft03_PUBLICKEYBYTES)
+    skey = ctypes.create_string_buffer(crypto_vrf_ietfdraft03_SECRETKEYBYTES)
+    sodium.crypto_vrf_ietfdraft03_keypair_from_seed(pkey, skey, seed)
+    return pkey.raw, skey.raw
+
+def crypto_vrf_ietfdraft03_sk_to_pk(skey):
+    if len(skey) != crypto_vrf_ietfdraft03_SECRETKEYBYTES: raise ValueError("Invalid param, must be {} bytes".format(crypto_vrf_ietfdraft03_SECRETKEYBYTES))
+    pkey = ctypes.create_string_buffer(crypto_vrf_ietfdraft03_PUBLICKEYBYTES)
+    sodium.crypto_vrf_ietfdraft03_sk_to_pk(pkey, skey)
+    return pkey.raw
+
+def crypto_vrf_ietfdraft03_sk_to_seed(skey):
+    if len(skey) != crypto_vrf_ietfdraft03_SECRETKEYBYTES: raise ValueError("Invalid param, must be {} bytes".format(crypto_vrf_ietfdraft03_SECRETKEYBYTES))
+    seed = ctypes.create_string_buffer(crypto_vrf_ietfdraft03_SEEDBYTES)
+    sodium.crypto_vrf_ietfdraft03_sk_to_seed(seed, skey)
+    return seed.raw

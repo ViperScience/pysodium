@@ -1,3 +1,11 @@
+# pysodium-cardano
+
+[Pysodium](https://github.com/stef/pysodium) is a very simple wrapper around the 
+[libsodium](https://doc.libsodium.org/) cryptographic library. This project, _pysodium-cardano_, is a fork of pysodium with added wrappers for
+the VRF functions present in the [Cardano-fork](https://github.com/IntersectMBO/libsodium) of libsodium.
+
+---------------------------------------
+
 This is a very simple wrapper around libsodium masquerading as nacl.
 
 [![Build Status](https://travis-ci.org/stef/pysodium.svg?branch=master)](https://travis-ci.org/stef/pysodium)
